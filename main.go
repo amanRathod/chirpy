@@ -60,14 +60,18 @@ func main() {
 	mux.Handle("/app/", apiCfg.middlewareMetricsIncrement(http.StripPrefix("/app",fileServer)))
 
 	mux.HandleFunc("GET /api/healthz", handlerReadiness)
-	mux.HandleFunc("POST /api/users", apiCfg.handlerUsersCreate)
-	mux.HandleFunc("PUT /api/users", apiCfg.validateCredentialsMiddleware(apiCfg.handlerUserUpdate))
-	mux.HandleFunc("GET /api/chirps", apiCfg.handlerChirpsRetrieve)
-	mux.HandleFunc("GET /api/chirps/{chirpID}", apiCfg.handlerChirpById)
-	mux.HandleFunc("POST /api/chirps", apiCfg.validateCredentialsMiddleware(apiCfg.handlerChirpsCreate))
+
 	mux.HandleFunc("POST /api/login", apiCfg.handlerLogin)
 	mux.HandleFunc("POST /api/refresh", apiCfg.handlerRefresh)
 	mux.HandleFunc("POST /api/revoke", apiCfg.handlerRevoke)
+
+	mux.HandleFunc("POST /api/users", apiCfg.handlerUsersCreate)
+	mux.HandleFunc("PUT /api/users", apiCfg.validateCredentialsMiddleware(apiCfg.handlerUserUpdate))
+
+	mux.HandleFunc("GET /api/chirps", apiCfg.validateCredentialsMiddleware(apiCfg.handlerChirpsRetrieve))
+	mux.HandleFunc("GET /api/chirps/{chirpID}", apiCfg.handlerChirpById)
+	mux.HandleFunc("POST /api/chirps", apiCfg.validateCredentialsMiddleware(apiCfg.handlerChirpsCreate))
+	mux.HandleFunc("DELETE /api/chirps/{chirpID}", apiCfg.validateCredentialsMiddleware(apiCfg.handlerChirpsDelete))
 
 	mux.HandleFunc("POST /admin/reset-hit", apiCfg.handlerReset)
 	mux.HandleFunc("POST /admin/reset", apiCfg.handleDeleteUser)
