@@ -31,3 +31,21 @@ func (cfg *apiConfig) validateCredentialsMiddleware(next http.HandlerFunc) http.
 		next(w,r)
 	}
 }
+
+func (cfg *apiConfig) validateApiKeyMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		apiKey, err := auth.GetAPIKey(r.Header)
+		if err != nil {
+			respondWithError(w, http.StatusUnauthorized, "Please provide api key", err)
+			return
+		}
+
+		if apiKey != cfg.polkaKey {
+			respondWithError(w, http.StatusUnauthorized, "Api key mismatch", nil)
+			return
+		}
+
+		next(w,r)
+	}
+}
+
